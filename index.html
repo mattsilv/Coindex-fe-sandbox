@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coin Photo Capture - Obverse & Reverse</title>
+    <title>Upload Coin Photos</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100">
@@ -18,143 +18,80 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
                     </button>
-                    <h1 class="text-lg font-semibold text-gray-900">Add Coin Photos</h1>
+                    <h1 class="text-lg font-semibold text-gray-900">Upload Coins</h1>
                     <div class="w-10"></div>
                 </div>
-                <p class="text-sm text-gray-600 text-center mt-2">Capture both sides of your coin</p>
             </div>
 
-            <!-- Obverse Section -->
-            <div class="bg-white shadow-lg p-6 border-b border-gray-200">
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <h2 class="text-lg font-semibold text-gray-900">Obverse (Heads)</h2>
-                        <p class="text-xs text-gray-500">Front side of the coin</p>
-                    </div>
-                    <div id="obverseCheck" class="hidden">
-                        <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                    </div>
-                </div>
+            <!-- Main Content -->
+            <div class="bg-white shadow-lg">
 
-                <!-- Obverse Initial State -->
-                <div id="obverseInitial" class="flex flex-col items-center py-8">
-                    <div class="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mb-4 border-2 border-blue-200">
-                        <svg class="w-12 h-12 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        </svg>
+                <!-- Initial Upload State -->
+                <div id="initialState" class="p-8">
+                    <div class="text-center mb-6">
+                        <div class="w-32 h-32 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 border-2 border-blue-200">
+                            <svg class="w-16 h-16 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                        </div>
+                        <h2 class="text-xl font-semibold text-gray-900 mb-2">Add Your Coins</h2>
+                        <p class="text-sm text-gray-600 mb-1">
+                            Upload one coin or multiple coins
+                        </p>
+                        <p class="text-xs text-gray-500 italic">
+                            AI will detect and help identify your coins
+                        </p>
                     </div>
 
-                    <label for="obverse-camera" class="bg-blue-600 text-white px-6 py-2.5 rounded-lg font-semibold cursor-pointer hover:bg-blue-700 transition text-sm">
-                        Capture Obverse
-                    </label>
-                    <input
-                        id="obverse-camera"
-                        type="file"
-                        accept="image/*"
-                        capture="environment"
-                        onchange="handleFileSelect(event, 'obverse')"
-                        class="hidden"
-                    />
+                    <!-- Upload Buttons -->
+                    <div class="space-y-3">
+                        <label for="camera-input" class="block w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold cursor-pointer hover:bg-blue-700 transition text-center">
+                            📷 Take Photo
+                        </label>
+                        <input
+                            id="camera-input"
+                            type="file"
+                            accept="image/*"
+                            capture="environment"
+                            onchange="handleFileSelect(event)"
+                            class="hidden"
+                        />
 
-                    <label for="obverse-gallery" class="mt-2 text-blue-600 px-4 py-2 rounded-lg font-medium cursor-pointer hover:bg-blue-50 transition text-sm">
-                        Choose from Gallery
-                    </label>
-                    <input
-                        id="obverse-gallery"
-                        type="file"
-                        accept="image/*"
-                        onchange="handleFileSelect(event, 'obverse')"
-                        class="hidden"
-                    />
-                </div>
-
-                <!-- Obverse Preview -->
-                <div id="obversePreview" class="hidden">
-                    <img
-                        id="obverseImage"
-                        src=""
-                        alt="Obverse preview"
-                        class="w-full rounded-lg shadow-md mb-3 object-cover max-h-64"
-                    />
-                    <button
-                        onclick="handleRetake('obverse')"
-                        class="w-full border-2 border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition text-sm flex items-center justify-center gap-2"
-                    >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                        </svg>
-                        Retake Obverse
-                    </button>
-                </div>
-            </div>
-
-            <!-- Reverse Section -->
-            <div class="bg-white shadow-lg p-6 border-b border-gray-200">
-                <div class="flex items-center justify-between mb-4">
-                    <div>
-                        <h2 class="text-lg font-semibold text-gray-900">Reverse (Tails)</h2>
-                        <p class="text-xs text-gray-500">Back side of the coin</p>
-                    </div>
-                    <div id="reverseCheck" class="hidden">
-                        <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
+                        <label for="gallery-input" class="block w-full border-2 border-blue-600 text-blue-600 px-6 py-3 rounded-lg font-semibold cursor-pointer hover:bg-blue-50 transition text-center">
+                            🖼️ Choose from Gallery
+                        </label>
+                        <input
+                            id="gallery-input"
+                            type="file"
+                            accept="image/*"
+                            onchange="handleFileSelect(event)"
+                            class="hidden"
+                        />
                     </div>
                 </div>
 
-                <!-- Reverse Initial State -->
-                <div id="reverseInitial" class="flex flex-col items-center py-8">
-                    <div class="w-24 h-24 bg-purple-50 rounded-full flex items-center justify-center mb-4 border-2 border-purple-200">
-                        <svg class="w-12 h-12 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        </svg>
+                <!-- Photo Preview State -->
+                <div id="previewState" class="hidden">
+
+                    <!-- Uploaded Photos List -->
+                    <div id="photosList" class="p-6 space-y-4">
+                        <!-- Photos will be inserted here -->
                     </div>
 
-                    <label for="reverse-camera" class="bg-purple-600 text-white px-6 py-2.5 rounded-lg font-semibold cursor-pointer hover:bg-purple-700 transition text-sm">
-                        Capture Reverse
-                    </label>
-                    <input
-                        id="reverse-camera"
-                        type="file"
-                        accept="image/*"
-                        capture="environment"
-                        onchange="handleFileSelect(event, 'reverse')"
-                        class="hidden"
-                    />
+                    <!-- Add More Button -->
+                    <div class="px-6 pb-4">
+                        <label for="add-more-input" class="block w-full border-2 border-dashed border-gray-300 text-gray-600 px-6 py-3 rounded-lg font-medium cursor-pointer hover:bg-gray-50 transition text-center">
+                            + Add Another Photo
+                        </label>
+                        <input
+                            id="add-more-input"
+                            type="file"
+                            accept="image/*"
+                            onchange="handleFileSelect(event)"
+                            class="hidden"
+                        />
+                    </div>
 
-                    <label for="reverse-gallery" class="mt-2 text-purple-600 px-4 py-2 rounded-lg font-medium cursor-pointer hover:bg-purple-50 transition text-sm">
-                        Choose from Gallery
-                    </label>
-                    <input
-                        id="reverse-gallery"
-                        type="file"
-                        accept="image/*"
-                        onchange="handleFileSelect(event, 'reverse')"
-                        class="hidden"
-                    />
-                </div>
-
-                <!-- Reverse Preview -->
-                <div id="reversePreview" class="hidden">
-                    <img
-                        id="reverseImage"
-                        src=""
-                        alt="Reverse preview"
-                        class="w-full rounded-lg shadow-md mb-3 object-cover max-h-64"
-                    />
-                    <button
-                        onclick="handleRetake('reverse')"
-                        class="w-full border-2 border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition text-sm flex items-center justify-center gap-2"
-                    >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                        </svg>
-                        Retake Reverse
-                    </button>
                 </div>
             </div>
 
@@ -165,96 +102,132 @@
                     class="w-full bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2"
                 >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/>
                     </svg>
-                    Continue
+                    Continue to Review
                 </button>
                 <p class="text-xs text-gray-500 text-center mt-2">
-                    <span id="photoCount">0</span> photo(s) captured
+                    AI will analyze your photos
                 </p>
             </div>
 
             <!-- Tips -->
             <div class="bg-blue-50 rounded-lg p-4 mt-4 text-sm text-blue-800">
-                <strong>💡 Tips:</strong> Use good lighting, avoid shadows, center the coin in frame
+                <div class="font-semibold mb-2">💡 Tips:</div>
+                <ul class="text-xs space-y-1 ml-4 list-disc">
+                    <li>Take photos of individual coins (front & back) or multiple coins at once</li>
+                    <li>Use good lighting and avoid shadows</li>
+                    <li>AI will detect how many coins are in each photo</li>
+                    <li>You can adjust quantities and details after upload</li>
+                </ul>
             </div>
 
         </div>
     </div>
 
     <script>
-        let obverseFile = null;
-        let reverseFile = null;
+        let photos = [];
+        let photoCounter = 0;
 
-        function handleFileSelect(event, side) {
+        function handleFileSelect(event) {
             const file = event.target.files[0];
             if (file) {
-                if (side === 'obverse') {
-                    obverseFile = file;
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        document.getElementById('obverseImage').src = e.target.result;
-                        document.getElementById('obverseInitial').classList.add('hidden');
-                        document.getElementById('obversePreview').classList.remove('hidden');
-                        document.getElementById('obverseCheck').classList.remove('hidden');
-                        updateContinueButton();
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    reverseFile = file;
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        document.getElementById('reverseImage').src = e.target.result;
-                        document.getElementById('reverseInitial').classList.add('hidden');
-                        document.getElementById('reversePreview').classList.remove('hidden');
-                        document.getElementById('reverseCheck').classList.remove('hidden');
-                        updateContinueButton();
-                    };
-                    reader.readAsDataURL(file);
-                }
+                photoCounter++;
+                const photoId = `photo-${photoCounter}`;
+
+                photos.push({
+                    id: photoId,
+                    file: file,
+                    detectedCoins: Math.floor(Math.random() * 3) + 1 // Simulate AI detection (1-3 coins)
+                });
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    addPhotoToList(photoId, e.target.result, file.name);
+                    updateUI();
+                };
+                reader.readAsDataURL(file);
+            }
+
+            // Reset input
+            event.target.value = '';
+        }
+
+        function addPhotoToList(photoId, imageUrl, filename) {
+            const photo = photos.find(p => p.id === photoId);
+            const detectedCoins = photo.detectedCoins;
+
+            const photoElement = document.createElement('div');
+            photoElement.id = photoId;
+            photoElement.className = 'border border-gray-200 rounded-lg p-4';
+            photoElement.innerHTML = `
+                <div class="relative">
+                    <img src="${imageUrl}" alt="${filename}" class="w-full rounded-lg mb-3 object-cover max-h-64">
+                    <button onclick="removePhoto('${photoId}')" class="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 hover:bg-red-600 transition shadow-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                        </svg>
+                        <span class="text-sm font-medium text-gray-700">AI detected <span id="${photoId}-count">${detectedCoins}</span> coin(s)</span>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <label class="text-xs text-gray-600">Quantity:</label>
+                    <button onclick="adjustQuantity('${photoId}', -1)" class="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200 text-gray-700">−</button>
+                    <span id="${photoId}-display" class="text-sm font-semibold w-8 text-center">${detectedCoins}</span>
+                    <button onclick="adjustQuantity('${photoId}', 1)" class="px-2 py-1 bg-gray-100 rounded hover:bg-gray-200 text-gray-700">+</button>
+                    <span class="text-xs text-gray-500 ml-2">(adjust if needed)</span>
+                </div>
+
+                <div class="mt-2">
+                    <label class="flex items-start gap-2 text-xs">
+                        <input type="checkbox" id="${photoId}-sides" class="mt-0.5">
+                        <span class="text-gray-600">This photo includes both obverse and reverse sides</span>
+                    </label>
+                </div>
+            `;
+
+            document.getElementById('photosList').appendChild(photoElement);
+        }
+
+        function adjustQuantity(photoId, delta) {
+            const photo = photos.find(p => p.id === photoId);
+            if (photo) {
+                photo.detectedCoins = Math.max(1, photo.detectedCoins + delta);
+                document.getElementById(`${photoId}-count`).textContent = photo.detectedCoins;
+                document.getElementById(`${photoId}-display`).textContent = photo.detectedCoins;
             }
         }
 
-        function handleRetake(side) {
-            if (side === 'obverse') {
-                obverseFile = null;
-                document.getElementById('obverseImage').src = '';
-                document.getElementById('obversePreview').classList.add('hidden');
-                document.getElementById('obverseInitial').classList.remove('hidden');
-                document.getElementById('obverseCheck').classList.add('hidden');
-                document.getElementById('obverse-camera').value = '';
-                document.getElementById('obverse-gallery').value = '';
-            } else {
-                reverseFile = null;
-                document.getElementById('reverseImage').src = '';
-                document.getElementById('reversePreview').classList.add('hidden');
-                document.getElementById('reverseInitial').classList.remove('hidden');
-                document.getElementById('reverseCheck').classList.add('hidden');
-                document.getElementById('reverse-camera').value = '';
-                document.getElementById('reverse-gallery').value = '';
-            }
-            updateContinueButton();
+        function removePhoto(photoId) {
+            photos = photos.filter(p => p.id !== photoId);
+            document.getElementById(photoId).remove();
+            updateUI();
         }
 
-        function updateContinueButton() {
-            const count = (obverseFile ? 1 : 0) + (reverseFile ? 1 : 0);
-            const continueSection = document.getElementById('continueSection');
-            const photoCount = document.getElementById('photoCount');
-
-            if (count > 0) {
-                continueSection.classList.remove('hidden');
-                photoCount.textContent = count;
+        function updateUI() {
+            if (photos.length > 0) {
+                document.getElementById('initialState').classList.add('hidden');
+                document.getElementById('previewState').classList.remove('hidden');
+                document.getElementById('continueSection').classList.remove('hidden');
             } else {
-                continueSection.classList.add('hidden');
+                document.getElementById('initialState').classList.remove('hidden');
+                document.getElementById('previewState').classList.add('hidden');
+                document.getElementById('continueSection').classList.add('hidden');
             }
         }
 
         function handleContinue() {
-            const photos = [];
-            if (obverseFile) photos.push(`Obverse: ${obverseFile.name}`);
-            if (reverseFile) photos.push(`Reverse: ${reverseFile.name}`);
-
-            alert(`Proceeding with:\n${photos.join('\n')}\n\nNext: Crop/rotate tools and metadata entry`);
+            const totalCoins = photos.reduce((sum, photo) => sum + photo.detectedCoins, 0);
+            alert(`Processing ${photos.length} photo(s) with ${totalCoins} total coin(s)\n\nNext: AI will analyze each coin and you can review/edit details`);
         }
     </script>
 </body>
