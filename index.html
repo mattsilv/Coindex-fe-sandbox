@@ -21,6 +21,14 @@
                     <h1 class="text-lg font-semibold text-gray-900">Upload Coins</h1>
                     <div class="w-10"></div>
                 </div>
+
+                <!-- Privacy Notice -->
+                <div class="mt-2 flex items-center gap-2 justify-center">
+                    <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <span class="text-xs text-gray-600">Location & device data removed</span>
+                </div>
             </div>
 
             <!-- Main Content -->
@@ -122,6 +130,30 @@
                 </ul>
             </div>
 
+            <!-- Privacy Notice -->
+            <div class="bg-green-50 border border-green-200 rounded-lg p-4 mt-4 text-xs text-green-800">
+                <div class="flex items-start gap-2">
+                    <svg class="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <div>
+                        <div class="font-semibold mb-1">🔒 Privacy Protected</div>
+                        <p>All location data, device information, and metadata are removed from your photos before upload. Only the image itself is processed.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Processing Modal (shown during metadata stripping) -->
+    <div id="processingModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-6 max-w-sm mx-4">
+            <div class="text-center">
+                <div class="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <h3 class="text-lg font-semibold mb-2">Processing Photo</h3>
+                <p class="text-sm text-gray-600">Removing location & metadata...</p>
+            </div>
         </div>
     </div>
 
@@ -129,28 +161,82 @@
         let photos = [];
         let photoCounter = 0;
 
-        function handleFileSelect(event) {
+        async function handleFileSelect(event) {
             const file = event.target.files[0];
-            if (file) {
+            if (!file) return;
+
+            // Show processing modal
+            document.getElementById('processingModal').classList.remove('hidden');
+
+            try {
+                // Strip EXIF metadata (privacy protection)
+                const strippedFile = await stripMetadata(file);
+
                 photoCounter++;
                 const photoId = `photo-${photoCounter}`;
 
                 photos.push({
                     id: photoId,
-                    file: file,
-                    detectedCoins: Math.floor(Math.random() * 3) + 1 // Simulate AI detection (1-3 coins)
+                    file: strippedFile,
+                    originalFile: file,
+                    detectedCoins: Math.floor(Math.random() * 3) + 1, // Simulate AI detection (1-3 coins)
+                    metadataStripped: true
                 });
 
                 const reader = new FileReader();
                 reader.onload = function(e) {
+                    // Hide processing modal
+                    document.getElementById('processingModal').classList.add('hidden');
                     addPhotoToList(photoId, e.target.result, file.name);
                     updateUI();
                 };
-                reader.readAsDataURL(file);
+                reader.readAsDataURL(strippedFile);
+
+            } catch (error) {
+                console.error('Error processing file:', error);
+                document.getElementById('processingModal').classList.add('hidden');
+                alert('Error processing photo. Please try again.');
             }
 
             // Reset input
             event.target.value = '';
+        }
+
+        /**
+         * Strip EXIF metadata from image file
+         * This removes location data, device info, timestamps, etc.
+         * Only the pixel data is preserved for privacy protection
+         */
+        async function stripMetadata(file) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    img.onload = function() {
+                        // Create canvas and draw image (this strips EXIF)
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+
+                        // Convert to blob (JPEG with no metadata)
+                        canvas.toBlob(function(blob) {
+                            // Create new file from blob with original name
+                            const strippedFile = new File([blob], file.name, {
+                                type: 'image/jpeg',
+                                lastModified: Date.now()
+                            });
+                            resolve(strippedFile);
+                        }, 'image/jpeg', 0.92); // 92% quality to preserve image clarity
+                    };
+                    img.onerror = reject;
+                    img.src = e.target.result;
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
         }
 
         function addPhotoToList(photoId, imageUrl, filename) {
@@ -168,6 +254,14 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
                     </button>
+
+                    <!-- Metadata Stripped Badge -->
+                    <div class="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full flex items-center gap-1 shadow-lg">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+                        </svg>
+                        Private
+                    </div>
                 </div>
 
                 <div class="flex items-center justify-between mb-2">
@@ -227,7 +321,8 @@
 
         function handleContinue() {
             const totalCoins = photos.reduce((sum, photo) => sum + photo.detectedCoins, 0);
-            alert(`Processing ${photos.length} photo(s) with ${totalCoins} total coin(s)\n\nNext: AI will analyze each coin and you can review/edit details`);
+            const metadataStatus = photos.every(p => p.metadataStripped) ? 'All photos privacy-protected ✓' : 'Warning: Some photos may contain metadata';
+            alert(`Processing ${photos.length} photo(s) with ${totalCoins} total coin(s)\n\n${metadataStatus}\n\nNext: AI will analyze each coin and you can review/edit details`);
         }
     </script>
 </body>
